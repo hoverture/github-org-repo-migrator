@@ -19,8 +19,10 @@ pub async fn process_repositories(
     source_org: &str,
     target_org: &str,
     skip_forks: bool,
+    force_update: bool,
     topics: Vec<String>,
-) -> Result<(), RepoCopyError> {
+) -> Result<Vec<String>, RepoCopyError> {
+    let mut failed_repos: Vec<String> = Vec::new();
     let mut headers = header::HeaderMap::new();
     headers.insert(
         header::AUTHORIZATION,
@@ -50,16 +52,16 @@ pub async fn process_repositories(
         page += 1;
     }
     let repo_count = repos.len();
-    println!("found {repo_count} repositories in {source_org} organisation");
+    log::info!("found {repo_count} repositories in {source_org} organisation");
 
     for repo in repos {
         if skip_forks && repo.fork {
-            println!("Skipping forked repository: {}", repo.name);
+            log::info!("Skipping forked repository: {}", repo.name);
             continue;
         }
 
-        println!("Processing repository: {}", repo.name);
-        process_repository(
+        log::info!("Processing repository: {}", repo.name);
+        match process_repository(
             &client,
             &repo.name,
             &repo.clone_url,
@@ -68,9 +70,20 @@ pub async fn process_repositories(
             topics.clone(),
             token,
             target_org,
+            force_update,
         )
-        .await?;
+        .await
+        {
+            Ok(_) => {
+                let name = repo.name;
+                log::info!("Processed successfully: {name}");
+            },
+            Err(e) => {
+                log::error!("{e:#?}");
+                failed_repos.push(repo.name.clone())
+            }
+        };
     }
 
-    Ok(())
+    Ok(failed_repos)
 }

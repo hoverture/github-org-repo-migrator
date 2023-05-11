@@ -39,11 +39,12 @@ The compiled binary will be available in the `target/release` directory.
   --source SOURCE_ORG \
   --destination DEST_ORG \
   [--skip-forks] \
+  [--force-update] \
   [--topics TOPIC1,TOPIC2,...]
 
 ```
 
-Replace `YOUR_GITHUB_PERSONAL_ACCESS_TOKEN`, `SOURCE_ORG`, and `DEST_ORG` with your GitHub personal access token, the source organization, and the destination organization, respectively. Use the --skip-forks flag to skip forked repositories, and the --topics flag followed by a comma-separated list of topics to add topics to the migrated repositories.
+Replace `YOUR_GITHUB_PERSONAL_ACCESS_TOKEN`, `SOURCE_ORG`, and `DEST_ORG` with your GitHub personal access token, the source organization, and the destination organization, respectively. Use the --skip-forks flag to skip forked repositories, --force-update to update repostitories that already exist in the destination and the --topics flag followed by a comma-separated list of topics to add topics to the migrated repositories.
 
 For help, run
 
@@ -65,6 +66,7 @@ or
   --source example-source-org \
   --destination example-destination-org \
   --skip-forks \
+  --force-update \
   --topics rust,cli-tool
 ```
 
@@ -80,6 +82,7 @@ cargo run -- \
   --source example-source-org \
   --destination example-destination-org \
   --skip-forks \
+  --force-update \
   --topics rust,cli-tool
 ```
 
